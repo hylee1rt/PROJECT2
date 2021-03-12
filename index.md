@@ -6,15 +6,13 @@ The idea of minimizing some quantity is common to many model fitting and optimiz
 
 For **OLS**, we are minimizing the sum of the squared residuals in order to determine the slope and the intercept with the cost function:
 
-![\sum_{i=1}^N(y_i-\hat{y}_i)^2
-](https://render.githubusercontent.com/render/math?math=%5CLARGE+%5Cdisplaystyle+%5Csum_%7Bi%3D1%7D%5EN%28y_i-%5Chat%7By%7D_i%29%5E2%0A)
+![\sum_{i=1}^N(y_i-\hat{y}_i)^2](https://render.githubusercontent.com/render/math?math=%5CLARGE+%5Cdisplaystyle+%5Csum_%7Bi%3D1%7D%5EN%28y_i-%5Chat%7By%7D_i%29%5E2%0A)
 
 However, if the linear model contains many predictor variables or if these variables are correlated, the standard OLS parameter estimates have large variance, thus making the model unreliable. In other words, when we are working with multiple input variables for a **multivariate regression model**, we run into cases where the model becomes too complex by trying too hard to capture the noise in the training dataset. This will create an *overfit* model, which will probably yield poor prediction and generalization power. 
 
 To mitigate this issue, we can **penalize the loss function** above by adding a multiple of an *L1* (Lasso) or an *L2* (Ridge) norm of the weights vector *w*(vector of the learned parameters in the linear regression). You get the following equation:
 
-![\L(X,Y)+\lambda{N(w)}
-](https://render.githubusercontent.com/render/math?math=%5CLARGE+%5Cdisplaystyle+%5CL%28X%2CY%29%2B%5Clambda%7BN%28w%29%7D%0A)
+![\L(X,Y)+\lambda{N(w)}](https://render.githubusercontent.com/render/math?math=%5CLARGE+%5Cdisplaystyle+%5CL%28X%2CY%29%2B%5Clambda%7BN%28w%29%7D%0A)
 
 
 where the loss metric is *L(X,Y)*, and *N* is either the *L1*, *L2* or any other norm. 
