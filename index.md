@@ -85,17 +85,28 @@ The plot below to shows how the coefficients of the Elastic Net model are changi
 
 
 
+For now, let us compare the mean absolute errors that we obtained from the models introduced above.
+
+#### Boston Housing Dataset
+| Model                          | MAE       | MAE (Standardized) | Optimal Alpha Value |                
+|--------------------------------|-----------|--------------------|---------------------|
+| Linear Model                   | $3,640.02 |                    |                     |
+| MAE Ridge Regression Model     | $3,600.77 | $3,443.23          |    43.000           |
+| MAE Lasso Model                | $3,619.90 | $3,489.26          |       0.130         |
+| MAE Elastic Net Model          | $3,610.42 |  $3,452.95         |       0.130         |
+
+
+|Ridge                         | Lasso   | Elastic Net |                 
+|--------------------------------|-----------|--------------------|
+|<img src="https://user-images.githubusercontent.com/66886936/110965712-73365780-8322-11eb-8284-8da2b618fb16.png" width="400" height="400"  />|hello|  hello |         
+| <img src="https://user-images.githubusercontent.com/66886936/110965913-b42e6c00-8322-11eb-995f-ded5f5383fd6.png" width="400" height="400"  />     | $3,600.77 | $3,443.23          |   
+| <img src="ttps://user-images.githubusercontent.com/66886936/110967099-0328d100-8324-11eb-9c5d-406eacf90740.png" width="400" height="400"  />  | $3,619.90 | $3,489.26   |   
+| MAE Elastic Net Model          | $3,610.42 |  $3,452.95         |       
 
 
 
-| Model                          | MAE       |                
-|--------------------------------|-----------|
-| Linear Model                   | $3,640.02 |
-| MAE Ridge Regression Model     | $3,600.77 |      
-| MAE Ridge (standardized) Model | $3,443.23 |
-<p align="right">
-  <img src="https://user-images.githubusercontent.com/66886936/110901494-6722a980-82d2-11eb-8cc6-f81a26c3f6e9.png" width="500" height="400"  />
-</p>
+
+
 
 
 
