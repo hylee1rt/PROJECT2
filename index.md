@@ -6,7 +6,7 @@ The idea of minimizing some quantity is common to many model fitting and optimiz
 
 For **OLS**, we are minimizing the sum of the squared residuals in order to determine the slope and the intercept with the cost function:
 
-![\sum_{i=1}^N(y_i-\hat{y}_i)^2](https://render.githubusercontent.com/render/math?math=%5CLARGE+%5Cdisplaystyle+%5Csum_%7Bi%3D1%7D%5EN%28y_i-%5Chat%7By%7D_i%29%5E2%0A)
+![\sum{i=1}^N(y_i-\hat{y_i})^2](https://render.githubusercontent.com/render/math?math=%5CLARGE+%5Cdisplaystyle+%5Csum_%7Bi%3D1%7D%5EN%28y_i-%5Chat%7By%7D_i%29%5E2%0A)
 
 However, if the linear model contains many predictor variables or if these variables are correlated, the standard OLS parameter estimates have large variance, thus making the model unreliable. In other words, when we are working with multiple input variables for a **multivariate regression model**, we run into cases where the model becomes too complex by trying too hard to capture the noise in the training dataset. This will create an *overfit* model, which will probably yield poor prediction and generalization power. 
 
@@ -81,12 +81,34 @@ The plot below to shows how the coefficients of the Elastic Net model are changi
 ![download (3)](https://user-images.githubusercontent.com/66886936/110908053-48c1ab80-82dc-11eb-81c3-792438b28b36.png)
 
 
+# SCAD - Fan & Li 2001
+
+The **smoothly clipped absolute deviation (SCAD) penalty** was designed to encourage sparse solutions to the least squares problem, while also allowing for large values of *Beta*.
+
+The cost function looks like:
+
+![download (7)](https://user-images.githubusercontent.com/66886936/110971819-55202580-8329-11eb-94f8-10259f542246.png)
+
+the SCAD penalty is often defined primarily by its first derivative 
+p'(β), rather than p(β). Its derivative is
 
 
-For now, let us compare the mean absolute errors that we obtained from the models introduced above.
+![p'_\lambda(\beta) = \lambda \left\{ I(\beta \leq \lambda) + \frac{(a\lambda - \beta)_+}{(a - 1) \lambda} I(\beta > \lambda) \right\}
+](https://render.githubusercontent.com/render/math?math=%5CLarge+%5Cdisplaystyle+p%27_%5Clambda%28%5Cbeta%29+%3D+%5Clambda+%5Cleft%5C%7B+I%28%5Cbeta+%5Cleq+%5Clambda%29+%2B+%5Cfrac%7B%28a%5Clambda+-+%5Cbeta%29_%2B%7D%7B%28a+-+1%29+%5Clambda%7D+I%28%5Cbeta+%3E+%5Clambda%29+%5Cright%5C%7D%0A)
+
+where *a* is a tunable parameter that controls how quickly the penalty drops off for large values of β.
+
+The penalty is 
+
+![\begin{cases} \lambda & \text{if } |\beta| \leq \lambda \\ \frac{(a\lambda - \beta)}{(a - 1) } & \text{if } \lambda < |\beta| \leq a \lambda \\ 0 & \text{if } |\beta| > a \lambda \\ \end{cases}
+](https://render.githubusercontent.com/render/math?math=%5CLarge+%5Cdisplaystyle+%5Cbegin%7Bcases%7D+%5Clambda+%26+%5Ctext%7Bif+%7D+%7C%5Cbeta%7C+%5Cleq+%5Clambda+%5C%5C+%5Cfrac%7B%28a%5Clambda+-+%5Cbeta%29%7D%7B%28a+-+1%29+%7D+%26+%5Ctext%7Bif+%7D+%5Clambda+%3C+%7C%5Cbeta%7C+%5Cleq+a+%5Clambda+%5C%5C+0+%26+%5Ctext%7Bif+%7D+%7C%5Cbeta%7C+%3E+a+%5Clambda+%5C%5C+%5Cend%7Bcases%7D%0A)
+
+
+
+We can now compare the mean absolute errors that we obtained from the models introduced above.
 
 #### Boston Housing Dataset
-| Model                          | MAE       | MAE (Standardized) |               
+| Model                          | MAE       | MAE (Standardized) |
 |--------------------------------|-----------|--------------------|
 | Linear Model                   | $3,640.02 |                    |                     
 | MAE Ridge Regression Model     | $3,600.77 | $3,443.23          |    
