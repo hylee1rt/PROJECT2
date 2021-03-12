@@ -88,11 +88,12 @@ We can compare the mean absolute errors that we obtained from the models introdu
 | MAE Elastic Net Model          | $3,610.42 |  $3,452.95         | 
 
 
-|Model                        | Optimal Alpha Value   |               
-|--------------------------------|--------------------|
-|<img src="https://user-images.githubusercontent.com/66886936/110965712-73365780-8322-11eb-8284-8da2b618fb16.png" width="500" height="400"  />|43.000|      
-| <img src="https://user-images.githubusercontent.com/66886936/110965913-b42e6c00-8322-11eb-995f-ded5f5383fd6.png" width="500" height="400"  /> | 0.130 | 
-| <img src="https://user-images.githubusercontent.com/66886936/110968953-205e9f00-8326-11eb-9e01-f83342c7c562.png" width="500" height="400"  />  | 0.130 | 
+|Model                        | Optimal Alpha Value   | Lowest MAE Value |              
+|--------------------------------|--------------------|-------------------|
+|<img src="https://user-images.githubusercontent.com/66886936/110965712-73365780-8322-11eb-8284-8da2b618fb16.png" width="500" height="400"  />|43.000|$3,442.81|     
+| <img src="https://user-images.githubusercontent.com/66886936/110965913-b42e6c00-8322-11eb-995f-ded5f5383fd6.png" width="500" height="400"  /> | 0.130 |$3,489.26| 
+| <img src="https://user-images.githubusercontent.com/66886936/110968953-205e9f00-8326-11eb-9e01-f83342c7c562.png" width="500" height="400"  />  | 0.130 |$3,452.95|
+ 
 
 
 # SCAD - Fan & Li 2001
@@ -266,9 +267,68 @@ X_train, X_test, y_train, y_test = tts(X,y,test_size=0.3,random_state=1234)
 | MAE Ridge Regression Model     | 1.86      |                      
 | MAE Lasso Model                | 1.85      |                         
 | MAE Elastic Net Model          | 1.85      | 
+| MAE SCAD Model                 | 1.54      | 
+| MAE Square Root Lasso Model.   | 1.38      |
+  
+The graphs below show us how our MAE is changing as *a* changes. We can identify the values of *a* that give us the lowest MAE. 
+
+
   
   
-  
-  
-  
-  
+|Model                        | Optimal Alpha Value   | Lowest MAE Value |               
+|--------------------------------|--------------------|------------------|
+|<img src="https://user-images.githubusercontent.com/66886936/110995775-e5ba2e00-8348-11eb-92c2-8d4e5be5928b.png" width="500" height="400"  />|0.130|1.84|      
+| <img src="https://user-images.githubusercontent.com/66886936/110995855-008ca280-8349-11eb-8c10-c5fbd0e12b78.png" width="500" height="400"  /> | 0.170 |1.62| 
+| <img src="https://user-images.githubusercontent.com/66886936/110995896-11d5af00-8349-11eb-90e4-593ed8a96def.png" width="500" height="400"  />  | 0.140 |1.75| 
+| <img src="https://user-images.githubusercontent.com/66886936/110998796-62e7a200-834d-11eb-8888-2ead1241bbc2.png" width="500" height="400"  />  | 3.900 |1.34|
+
+
+
+
+
+# Wine Quality Data
+
+
+Let's look at another dataset from the sklearn library and see how the models affect the results. 
+
+![download (17)](https://user-images.githubusercontent.com/66886936/111000559-3f722680-8350-11eb-9126-8d9856c75516.png)
+
+
+| Model                          | MAE       | 
+|--------------------------------|-----------|
+| Linear Model                   | 0.4793      |                                       
+| MAE Ridge Regression Model     | 0.4779      |                      
+| MAE Lasso Model                | 0.6019      |                         
+| MAE Elastic Net Model          | 0.52        | 
+| MAE SCAD Model                 | 0.5898      | 
+| MAE Square Root Lasso Model.   | 0.4766      |
+
+Clearly, we can see that the performance of these models can be dependent on many things. Regularizing may not always give us the best result. This also shows the importance of choosing the right *a* value that will give us the smallest error. This brings us to the task of finding the best parameters. Models can have many parameters and finding the best combination of parameters can be treated as a search problem. Two simple and search strategies are grid search and random search. Scikit-learn provides these two methods for algorithm parameter tuning and examples of each are provided below.
+
+
+
+# GridSearchCV
+
+Grid Search is an effective method for adjusting the parameters in supervised learning and improve the generalization performance of a model. With Grid Search, we try all possible combinations of the parameters of interest and find the best ones.
+
+| GridSearchCV                   | Alpha     | MAE |
+|--------------------------------|-----------|--------------------|
+| Ridge                          |     66.87 | $3776.09           |                     
+| Lasso                          |      0.11 | $3887.78          |    
+| MAE Lasso Model                |      0.15 | $3820.86          |       
+
+
+# RandomizedSearchCV
+
+In the grid search approach, every combination of hyperparameter values is tried which can be very inefficient. RandomizedSearchCV is very useful when we have many parameters to try and the training time is very long. Random Search sets up a grid of hyperparameter values and selects random combinations to train the model and score. That means that not all parameter values are tried out, but rather a fixed number of parameter settings is sampled from the specified distributions. The number of parameter settings that are tried is given by n_iter.This allows you to explicitly control the number of parameter combinations that are attempted. The number of search iterations is set based on time or resources. Scikit Learn offers the RandomizedSearchCV function for this process.
+
+
+| RandomizedSearchCV              | Alpha     | MAE |
+|--------------------------------|-----------|--------------------|
+| Ridge                          |     69.88 | $3776.22           |                     
+| Lasso                          |      0.12 | $3888.63          |    
+| MAE Lasso Model                |      0.15 | $3820.86          |       
+
+
+From the tables of results, we can see that the alpha and MAE values that the searches returned were quite close, even though the run time for the randomized search was a lot lower. 
+
