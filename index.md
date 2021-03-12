@@ -80,6 +80,17 @@ The plot below to shows how the coefficients of the Elastic Net model are changi
 
 ![download (3)](https://user-images.githubusercontent.com/66886936/110908053-48c1ab80-82dc-11eb-81c3-792438b28b36.png)
 
+We can compare the mean absolute errors that we obtained from the models introduced above:
+
+| Model                          | MAE       | MAE (Standardized) |
+|--------------------------------|-----------|--------------------|
+| Linear Model                   | $3,640.02 |                    |                     
+| MAE Ridge Regression Model     | $3,600.77 | $3,443.23          |    
+| MAE Lasso Model                | $3,619.90 | $3,489.26          |       
+| MAE Elastic Net Model          | $3,610.42 |  $3,452.95         | 
+| MAE SCAD Model                 | $3,230.29 |                    |
+| MAE Square Root Lasso Model    |$3,258.48  |                    |
+
 
 # SCAD - Fan & Li 2001
 
@@ -98,22 +109,62 @@ p'(β), rather than p(β). Its derivative is
 
 where *a* is a tunable parameter that controls how quickly the penalty drops off for large values of β.
 
-The penalty is 
+The penalty is defined as:
 
 ![\begin{cases} \lambda & \text{if } |\beta| \leq \lambda \\ \frac{(a\lambda - \beta)}{(a - 1) } & \text{if } \lambda < |\beta| \leq a \lambda \\ 0 & \text{if } |\beta| > a \lambda \\ \end{cases}
 ](https://render.githubusercontent.com/render/math?math=%5CLarge+%5Cdisplaystyle+%5Cbegin%7Bcases%7D+%5Clambda+%26+%5Ctext%7Bif+%7D+%7C%5Cbeta%7C+%5Cleq+%5Clambda+%5C%5C+%5Cfrac%7B%28a%5Clambda+-+%5Cbeta%29%7D%7B%28a+-+1%29+%7D+%26+%5Ctext%7Bif+%7D+%5Clambda+%3C+%7C%5Cbeta%7C+%5Cleq+a+%5Clambda+%5C%5C+0+%26+%5Ctext%7Bif+%7D+%7C%5Cbeta%7C+%3E+a+%5Clambda+%5C%5C+%5Cend%7Bcases%7D%0A)
 
+and as implemented as follows.
+
+```python
+def scad_penalty(beta_hat, lambda_val, a_val):
+    is_linear = (np.abs(beta_hat) <= lambda_val)
+    is_quadratic = np.logical_and(lambda_val < np.abs(beta_hat), np.abs(beta_hat) <= a_val * lambda_val)
+    is_constant = (a_val * lambda_val) < np.abs(beta_hat)
+    
+    linear_part = lambda_val * np.abs(beta_hat) * is_linear
+    quadratic_part = (2 * a_val * lambda_val * np.abs(beta_hat) - beta_hat**2 - lambda_val**2) / (2 * (a_val - 1)) * is_quadratic
+    constant_part = (lambda_val**2 * (a_val + 1)) / 2 * is_constant
+    return linear_part + quadratic_part + constant_part
+    
+def scad_derivative(beta_hat, lambda_val, a_val):
+    return lambda_val * ((beta_hat <= lambda_val) + (a_val * lambda_val - beta_hat)*((a_val * lambda_val - beta_hat) > 0) / ((a_val - 1) * lambda_val) * (beta_hat > lambda_val))
+    
+    def scad(beta):
+  beta = beta.flatten()
+  beta = beta.reshape(-1,1)
+  n = len(y)
+  return 1/n*np.sum((y-X.dot(beta))**2) + np.sum(scad_penalty(beta,lam,a))
+  
+def dscad(beta):
+  beta = beta.flatten()
+  beta = beta.reshape(-1,1)
+  n = len(y)
+  return np.array(-2/n*np.transpose(X).dot(y-X.dot(beta))+scad_derivative(beta,lam,a)).flatten()
+```
 
 
-We can now compare the mean absolute errors that we obtained from the models introduced above.
+# Square Root Lasso
 
-#### Boston Housing Dataset
-| Model                          | MAE       | MAE (Standardized) |
-|--------------------------------|-----------|--------------------|
-| Linear Model                   | $3,640.02 |                    |                     
-| MAE Ridge Regression Model     | $3,600.77 | $3,443.23          |    
-| MAE Lasso Model                | $3,619.90 | $3,489.26          |       
-| MAE Elastic Net Model          | $3,610.42 |  $3,452.95         |       
+**Square root lasso** is a modification of the Lasso. Belloni et al.  proposed a pivotal method for estimating high-dimensional sparse linear regression models. For this model, we do not need to know the standard deviation of the noise. 
+
+The cost function is:
+
+![\sqrt{\frac{1}{n}\sum_{i=1}^{n}(y_i-\hat{y}_i)^2}+\alpha\sum_{i=1}^{p}|\beta_i|
+](https://render.githubusercontent.com/render/math?math=%5CLarge+%5Cdisplaystyle+%5Csqrt%7B%5Cfrac%7B1%7D%7Bn%7D%5Csum_%7Bi%3D1%7D%5E%7Bn%7D%28y_i-%5Chat%7By%7D_i%29%5E2%7D%2B%5Calpha%5Csum_%7Bi%3D1%7D%5E%7Bp%7D%7C%5Cbeta_i%7C%0A)
+
+and the implementation of the function will return us *yhat*, the predictions, and *beta*, which are the coefficients.
+
+```python 
+def sqrtLasso(X,y,alpha):
+    model = sm.OLS(y,X)
+    result = model.fit_regularized(method='sqrt_lasso', alpha=alpha,profile_scale=True)
+    return result.predict(X), result.params
+
+yhat, beta = sqrtLasso(X,y,0.5)
+```
+
+
 
 
 |Model                        | Optimal Alpha Value   |               
@@ -124,10 +175,38 @@ We can now compare the mean absolute errors that we obtained from the models int
 
 
 
+So up to now, we have been working with a single random split of the data. What if we just happened to pick a particular random_state which gave us unusually high or low results, and only did this test once?  We could possibly be misled about how good or bad our model is (what if you flipped a coin 10 times and got 10 heads...) Maybe try 100 more times to check?
+
+To resolve some of these concerns, we will briefly take a look at a concept called **$K$-fold cross validation**, and here's how it goes:
+
+1. Split your data into $K$ equally sized groups (you pick this number).  These groups are called **folds**.
+2. Use the first fold as your test data, and the remining $K-1$ folds as your training data, and then check the scores.
+4. Use the second fold as your test data, and the remaining $K-1$ folds as your training data.
+5. Repeat this process $K$ times, using each of the $K$ folds as your test data exactly once.
+6. Now look at the average of the results, or perhaps a histogram of the results.  This will provide an estimate of how well you should expect your model to perform on new data.
 
 
+This method of testing the model on different training and test sets can be implemented as:
 
+```python
+def DoKFold(X,y,alpha,n):
+  mae = []
+  kf = KFold(n_splits=n,shuffle=True,random_state=1234)
+  for idxtrain, idxtest in kf.split(X):
+    X_train = X[idxtrain,:]
+    y_train = y[idxtrain]
+    X_test  = X[idxtest,:]
+    y_test  = y[idxtest]
+    model = sm.OLS(y_train,X_train)
+    result = model.fit_regularized(method='sqrt_lasso', alpha=alpha,profile_scale=True)
+    yhat_test = result.predict(X_test)
+    mae.append(mean_absolute_error(y_test,yhat_test))
+  return np.mean(mae)
+```
 
+The result of this K-fold validation will give us the average MAE of the folds at each *a*. This should give us a better sense of the errors, and provide greater confidence in the outcome. Now, what if we change around our hyperparameter *a*? How would our MAE change?
+
+![download (8)](https://user-images.githubusercontent.com/66886936/110978061-e8108e00-8330-11eb-9824-c980583d850a.png)
 
 
 
