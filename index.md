@@ -217,7 +217,7 @@ With cross validation, the lowest MAE value from our cross validation square roo
 
 # Applying the models on simulated synthetic data
 
-To better understand our models and thus our data, we will use a Toeplitz matrix implementation to simulate multiple correlations. Below, we will define a function to generate X with the given number of observations as num_samples, number of features as p, and the strength of the correlation, rho. It will return X with the Toeplitz correlation structure.
+To better understand our models and thus our data, we will use a Toeplitz matrix implementation to simulate multiple correlations data. Below, we will define a function to generate X with the given number of observations as num_samples, number of features as p, and the strength of the correlation, rho. It will return X with the Toeplitz correlation structure.
 
 ```python 
 def make_correlated_features(num_samples,p,rho):
@@ -241,8 +241,8 @@ X = make_correlated_features(200,p,0.8)
   
   and fill in zeros for the rest of the coefficients.
   
-  ```python
-  beta = np.array([-1,2,3,0,0,0,0,2,-1,4])
+```python
+beta = np.array([-1,2,3,0,0,0,0,2,-1,4])
 beta = beta.reshape(-1,1)
 betas = np.concatenate([beta,np.repeat(0,p-len(beta)).reshape(-1,1)],axis=0)
 ```
