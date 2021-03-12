@@ -34,8 +34,6 @@ Let's First look at a heat map of the correlationa in the data. The colors of th
 
 
 
-
-
 # L2 (Ridge) Regularization - Tikhonov 1940's
 
 The first regularization technique we will look at is commonly called **Ridge regression**.  In addition to minimizing the sum of squared errors, Ridge regression also penalizes a model for having more parameters and/or larger parameters.  This is accomplished by modifying the cost function:
@@ -80,7 +78,7 @@ The plot below to shows how the coefficients of the Elastic Net model are changi
 
 ![download (3)](https://user-images.githubusercontent.com/66886936/110908053-48c1ab80-82dc-11eb-81c3-792438b28b36.png)
 
-We can compare the mean absolute errors that we obtained from the models introduced above:
+We can compare the mean absolute errors that we obtained from the models introduced above: We can also plot a range of *a* to visualize where it may give us a minimum MAE.
 
 | Model                          | MAE       | MAE (Standardized) |
 |--------------------------------|-----------|--------------------|
@@ -168,20 +166,22 @@ def sqrtLasso(X,y,alpha):
 
 yhat, beta = sqrtLasso(X,y,0.5)
 ```
-| MAE SCAD Model                 | $3,230.29 |                    |
-| MAE Square Root Lasso Model    |$3,258.48  |                    |
+
+| Model                          | MAE      | 
+|--------------------------------|----------|
+| MAE SCAD Model                 |$3,230.29 |                    
+| MAE Square Root Lasso Model    |$3,258.48 |                    
 
 
 
 So up to now, we have been working with a single random split of the data. What if we just happened to pick a particular random_state which gave us unusually high or low results, and only did this test once?  We could possibly be misled about how good or bad our model is (what if you flipped a coin 10 times and got 10 heads...) Maybe try 100 more times to check?
 
-To resolve some of these concerns, we will briefly take a look at a concept called **$K$-fold cross validation**, and here's how it goes:
+To resolve some of these concerns, we will briefly take a look at a concept called **K-fold cross validation**, and here's how it goes:
 
-1. Split your data into $K$ equally sized groups (you pick this number).  These groups are called **folds**.
-2. Use the first fold as your test data, and the remining $K-1$ folds as your training data, and then check the scores.
-4. Use the second fold as your test data, and the remaining $K-1$ folds as your training data.
-5. Repeat this process $K$ times, using each of the $K$ folds as your test data exactly once.
-6. Now look at the average of the results, or perhaps a histogram of the results.  This will provide an estimate of how well you should expect your model to perform on new data.
+1. Split your data into *K* equally sized groups (you pick this number).  These groups are called **folds**.
+2. Use the first fold as your test data, and the remining *K-1* folds as your training data, and then check the scores.
+4. Use the second fold as your test data, and the remaining *K-1* folds as your training data.
+5. Repeat this process *K* times, using each of the *K* folds as your test data exactly once.
 
 
 This method of testing the model on different training and test sets can be implemented as:
@@ -204,7 +204,71 @@ def DoKFold(X,y,alpha,n):
 
 The result of this K-fold validation will give us the average MAE of the folds at each *a*. This should give us a better sense of the errors, and provide greater confidence in the outcome. Now, what if we change around our hyperparameter *a*? How would our MAE change?
 
-![download (8)](https://user-images.githubusercontent.com/66886936/110978061-e8108e00-8330-11eb-9824-c980583d850a.png)
+- Lowest MAE value:  $3,579.26 
+- Optimal alpha value: 0.100|
+
+With cross validation, the lowest MAE value from our cross validation square root lasso model looks more similar to the MAE from other models. 
+
+<img src="https://user-images.githubusercontent.com/66886936/110978061-e8108e00-8330-11eb-9824-c980583d850a.png" width="600" height="400"  />
 
 
+# Applying the models on simulated synthetic data
 
+To better understand our models and thus our data, we will use a Toeplitz matrix implementation to simulate multiple correlations. Below, we will define a function to generate X with the given number of observations as num_samples, number of features as p, and the strength of the correlation, rho. It will return X with the Toeplitz correlation structure.
+
+```python 
+def make_correlated_features(num_samples,p,rho):
+  vcor = [] 
+  for i in range(p):
+    vcor.append(rho**i)
+  r = toeplitz(vcor)
+  mu = np.repeat(0,p)
+  X = np.random.multivariate_normal(mu, r, size=num_samples)
+  return X
+  
+n = 200
+p = 50
+X = make_correlated_features(200,p,0.8)
+  ```
+  
+  Simulate some **ground truth** for the data (this will be linear)
+  
+  ![\large y = X*\beta^* +\sigma\epsilon](https://render.githubusercontent.com/render/math?math=%5CLarge+%5Cdisplaystyle+%5Clarge+y+%3D+X%2A%5Cbeta%5E%2A+%2B%5Csigma%5Cepsilon%0A)
+  
+  
+  and fill in zeros for the rest of the coefficients.
+  
+  ```python
+  beta = np.array([-1,2,3,0,0,0,0,2,-1,4])
+beta = beta.reshape(-1,1)
+betas = np.concatenate([beta,np.repeat(0,p-len(beta)).reshape(-1,1)],axis=0)
+```
+  
+  Then we can generate *y* with some random noise which follows a normal distribution.
+ 
+```python
+n = 200
+sigma = 2
+y = X.dot(betas) + sigma*np.random.normal(0,1,n).reshape(-1,1)
+```
+
+Now that we have our simulated data, *X* and *y*, we could explore how the models perform on this dataset. We will take a single split of the data and fit the models:
+
+```python
+X_train, X_test, y_train, y_test = tts(X,y,test_size=0.3,random_state=1234)
+```
+  
+  
+  
+| Model                          | MAE       | 
+|--------------------------------|-----------|
+| Linear Model                   | 2.03      |                                       
+| MAE Ridge Regression Model     | 1.86      |                      
+| MAE Lasso Model                | 1.85      |                         
+| MAE Elastic Net Model          | 1.85      | 
+  
+  
+  
+  
+  
+  
