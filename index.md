@@ -167,6 +167,8 @@ def sqrtLasso(X,y,alpha):
 
 yhat, beta = sqrtLasso(X,y,0.5)
 ```
+How did the two models perform?
+
 
 | Model                          | MAE      | 
 |--------------------------------|----------|
