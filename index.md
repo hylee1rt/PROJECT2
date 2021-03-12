@@ -88,8 +88,13 @@ We can compare the mean absolute errors that we obtained from the models introdu
 | MAE Ridge Regression Model     | $3,600.77 | $3,443.23          |    
 | MAE Lasso Model                | $3,619.90 | $3,489.26          |       
 | MAE Elastic Net Model          | $3,610.42 |  $3,452.95         | 
-| MAE SCAD Model                 | $3,230.29 |                    |
-| MAE Square Root Lasso Model    |$3,258.48  |                    |
+
+
+|Model                        | Optimal Alpha Value   |               
+|--------------------------------|--------------------|
+|<img src="https://user-images.githubusercontent.com/66886936/110965712-73365780-8322-11eb-8284-8da2b618fb16.png" width="500" height="400"  />|43.000|      
+| <img src="https://user-images.githubusercontent.com/66886936/110965913-b42e6c00-8322-11eb-995f-ded5f5383fd6.png" width="500" height="400"  /> | 0.130 | 
+| <img src="https://user-images.githubusercontent.com/66886936/110968953-205e9f00-8326-11eb-9e01-f83342c7c562.png" width="500" height="400"  />  | 0.130 | 
 
 
 # SCAD - Fan & Li 2001
@@ -163,15 +168,8 @@ def sqrtLasso(X,y,alpha):
 
 yhat, beta = sqrtLasso(X,y,0.5)
 ```
-
-
-
-
-|Model                        | Optimal Alpha Value   |               
-|--------------------------------|--------------------|
-|<img src="https://user-images.githubusercontent.com/66886936/110965712-73365780-8322-11eb-8284-8da2b618fb16.png" width="500" height="400"  />|43.000|      
-| <img src="https://user-images.githubusercontent.com/66886936/110965913-b42e6c00-8322-11eb-995f-ded5f5383fd6.png" width="500" height="400"  /> | 0.130 | 
-| <img src="https://user-images.githubusercontent.com/66886936/110968953-205e9f00-8326-11eb-9e01-f83342c7c562.png" width="500" height="400"  />  | 0.130 | 
+| MAE SCAD Model                 | $3,230.29 |                    |
+| MAE Square Root Lasso Model    |$3,258.48  |                    |
 
 
 
