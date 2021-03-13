@@ -317,7 +317,7 @@ Grid Search is an effective method for adjusting the parameters in supervised le
 |--------------------------------|-----------|--------------------|
 | Ridge                          |     66.87 | $3776.09           |                     
 | Lasso                          |      0.11 | $3887.78          |    
-| MAE Lasso Model                |      0.15 | $3820.86          |       
+| Elastic Net                    |      0.15 | $3820.86          |       
 
 
 # RandomizedSearchCV
@@ -329,8 +329,16 @@ In the grid search approach, every combination of hyperparameter values is tried
 |--------------------------------|-----------|--------------------|
 | Ridge                          |     69.88 | $3776.22           |                     
 | Lasso                          |      0.12 | $3888.63          |    
-| MAE Lasso Model                |      0.15 | $3820.86          |       
+| Elastic Net                    |      0.15 | $3820.86          |       
 
 
 From the tables of results, we can see that the alpha and MAE values that the searches returned were quite close, even though the run time for the randomized search was a lot lower. 
+
+# Conclusion
+We have now looked at five regularization techniques and why and when are they applied. Applying regularization techniques makes sure that unimportant features are dropped (leading to a reduction of overfitting) and multicollinearity is reduced. Different regularization techniques used different cost functions to calculate the coefficients, and we saw how those coefficients changed with different values of *a*. The idea behind regularization is that models that overfit the data are complex models that have too many parameters, so we looked at tuning those parameters and using methods to search for the values that give us the lowest mean absolute errors. Other advanced methods of estimating the value of hyperparameters include particle swarm optimization and simulated annealing. 
+
+
+
+
+
 
