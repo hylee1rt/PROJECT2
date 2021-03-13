@@ -1,5 +1,3 @@
-# Project 2
-
 When we were finding the line of best fit for **univariate models** using **ordinary least squares (OLS)**, we were minimizing the sum of squared errors between the model and the data. 
 
 The idea of minimizing some quantity is common to many model fitting and optimization problems, and the thing we are minimizing is referred as a *cost function*.
